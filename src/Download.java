@@ -38,7 +38,7 @@ public class Download implements Runnable {
                     tempFileName = fileName.substring(0, indexOfB + 1) + "(" + countRepeats++ + ")" + fileName.substring(indexOfDot);
                     fileName = tempFileName;
                 }
-            } while (fileToDownload.exists());
+            } while (fileToDownload.exists() && !fileToDownload.isDirectory());
 
             BufferedInputStream bufferedInputStream = new BufferedInputStream(url.openStream());
             FileOutputStream stream = new FileOutputStream(fileName);
