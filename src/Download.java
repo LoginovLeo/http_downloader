@@ -2,19 +2,17 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
-import java.util.Random;
+
 
 public class Download implements Runnable {
 
 
-    private String url;
+    private final String URL;
 
 
     public Download(String url) {
-        this.url = url;
+        this.URL = url;
 
 
     }
@@ -24,7 +22,7 @@ public class Download implements Runnable {
 
         try {
             String threadDescription = Thread.currentThread().getName();
-            URL url = new URL(this.url);
+            URL url = new URL(this.URL);
             String fullFileName = url.getFile();
             String fileName = fullFileName.substring(fullFileName.lastIndexOf("/") + 1);
 
@@ -46,17 +44,15 @@ public class Download implements Runnable {
             FileOutputStream stream = new FileOutputStream(fileName);
             System.out.println("Download started " + threadDescription + " file: " + fileName);
 
-            int count = 0;
-            byte[] b1 = new byte[100];
-            long timeStart = System.currentTimeMillis() / 1000;
-
-            while ((count = bufferedInputStream.read(b1)) != -1) {
-                stream.write(b1, 0, count);
-
+            int count;
+            byte[] bytes = new byte[100];
+            long timeStartDownload = System.currentTimeMillis() / 1000;
+            while ((count = bufferedInputStream.read(bytes)) != -1) {
+                stream.write(bytes, 0, count);
             }
-
-            long timeEnd = System.currentTimeMillis() / 1000;
-            System.out.println("Download finished. Time of download " + fileName + " " + (timeEnd - timeStart) + "sec.");
+            long timeEndDownload = System.currentTimeMillis() / 1000;
+            stream.close();
+            System.out.println("Download finished. Time of download " + fileName + " " + (timeEndDownload - timeStartDownload) + "sec.");
         } catch (IOException e) {
             e.printStackTrace();
         }
