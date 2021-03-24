@@ -22,44 +22,41 @@ public class Download implements Runnable {
     @Override
     public void run() {
 
-
         try {
             String threadDescription = Thread.currentThread().getName();
             URL url = new URL(this.url);
             String fullFileName = url.getFile();
             String fileName = fullFileName.substring(fullFileName.lastIndexOf("/") + 1);
-            System.out.println("Download started " + threadDescription + " file: " +  fileName);
+
             int countRepeats = 0;
             File fileToDownload;
-
             do {
-                    fileToDownload = new File(fileName);
-                    String tempFileName = fileName;
+                fileToDownload = new File(fileName);
+                String tempFileName = fileName;
 
-                    if (fileToDownload.exists() && !fileToDownload.isDirectory()) {
-                        int indexOf = fileName.lastIndexOf(".");
-                        int indexOfB = tempFileName.lastIndexOf("B");
-                        tempFileName = fileName.substring(0, indexOfB + 1) + "(" + countRepeats++ + ")" + fileName.substring(indexOf);
-                        fileName = tempFileName;
-                    }
-                } while (fileToDownload.exists());
+                if (fileToDownload.exists() && !fileToDownload.isDirectory()) {
+                    int indexOfDot = fileName.lastIndexOf(".");
+                    int indexOfB = tempFileName.lastIndexOf("B");
+                    tempFileName = fileName.substring(0, indexOfB + 1) + "(" + countRepeats++ + ")" + fileName.substring(indexOfDot);
+                    fileName = tempFileName;
+                }
+            } while (fileToDownload.exists());
 
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(url.openStream());
-                FileOutputStream stream = new FileOutputStream(fileName);
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(url.openStream());
+            FileOutputStream stream = new FileOutputStream(fileName);
+            System.out.println("Download started " + threadDescription + " file: " + fileName);
 
             int count = 0;
             byte[] b1 = new byte[100];
-            long timeStart = System.currentTimeMillis()/1000;
+            long timeStart = System.currentTimeMillis() / 1000;
 
             while ((count = bufferedInputStream.read(b1)) != -1) {
                 stream.write(b1, 0, count);
 
             }
 
-
-
-            long timeEnd = System.currentTimeMillis()/1000;
-            System.out.println("Time of download " + fileName + " " + (timeEnd - timeStart)  + "sec.");
+            long timeEnd = System.currentTimeMillis() / 1000;
+            System.out.println("Download finished. Time of download " + fileName + " " + (timeEnd - timeStart) + "sec.");
         } catch (IOException e) {
             e.printStackTrace();
         }
