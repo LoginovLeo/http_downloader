@@ -12,7 +12,9 @@ public class Launcher {
         ConfigReader readerConfig = new ConfigReader();
         readerConfig.readConfig(CONFIG_FILE);
         CreateThreads threadsDownload = new CreateThreads();
-        threadsDownload.runThreads(readerConfig.getLinksToDownload(),Integer.parseInt(readerConfig.getNumberOfThreads()));
+        threadsDownload.runThreads(readerConfig.getLinksToDownload(),Integer.parseInt(readerConfig.getNumberOfThreads()),readerConfig.getPath());
+
+
 
 
 

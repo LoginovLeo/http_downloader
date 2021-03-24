@@ -9,11 +9,12 @@ public class Download implements Runnable {
 
 
     private final String URL;
+    private final String PATH;
 
 
-    public Download(String url) {
+    public Download(String url, String path) {
         this.URL = url;
-
+        this.PATH = path;
 
     }
 
@@ -26,22 +27,24 @@ public class Download implements Runnable {
             String fullFileName = url.getFile();
             String fileName = fullFileName.substring(fullFileName.lastIndexOf("/") + 1);
 
+
             int countRepeats = 0;
             File fileToDownload;
             do {
-                fileToDownload = new File(fileName);
+                fileToDownload = new File(PATH + fileName);
                 String tempFileName = fileName;
 
                 if (fileToDownload.exists() && !fileToDownload.isDirectory()) {
                     int indexOfDot = fileName.lastIndexOf(".");
                     int indexOfB = tempFileName.lastIndexOf("B");
+
                     tempFileName = fileName.substring(0, indexOfB + 1) + "(" + countRepeats++ + ")" + fileName.substring(indexOfDot);
                     fileName = tempFileName;
                 }
             } while (fileToDownload.exists() && !fileToDownload.isDirectory());
 
             BufferedInputStream bufferedInputStream = new BufferedInputStream(url.openStream());
-            FileOutputStream stream = new FileOutputStream(fileName);
+            FileOutputStream stream = new FileOutputStream(PATH + fileName);
             System.out.println("Download started " + threadDescription + " file: " + fileName);
 
             int count;
