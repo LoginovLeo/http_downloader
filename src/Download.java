@@ -46,7 +46,7 @@ public class Download implements Runnable {
 
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(url.openStream());
                 FileOutputStream stream = new FileOutputStream(fileName);
-
+//som
             int count = 0;
             byte[] b1 = new byte[100];
             long timeStart = System.currentTimeMillis()/1000;
