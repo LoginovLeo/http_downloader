@@ -3,6 +3,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class Download implements Runnable {
@@ -17,6 +20,7 @@ public class Download implements Runnable {
         this.PATH = path;
 
     }
+
 
     @Override
     public void run() {
@@ -45,17 +49,37 @@ public class Download implements Runnable {
 
             BufferedInputStream bufferedInputStream = new BufferedInputStream(url.openStream());
             FileOutputStream stream = new FileOutputStream(PATH + fileName);
-            System.out.println("Download started " + threadDescription + " file: " + fileName);
+            // System.out.println("Download started " + threadDescription + " file: " + fileName);
 
-            int count;
             byte[] bytes = new byte[100];
+            int count;
+
             long timeStartDownload = System.currentTimeMillis() / 1000;
+            ScheduledExecutorService downloadingProcess = Executors.newScheduledThreadPool(1);
+            if (bufferedInputStream.read(bytes) != -1) {
+                String finalFileName = fileName;
+                downloadingProcess.scheduleWithFixedDelay(() ->
+                        System.out.println("Downloading file: " + finalFileName + " in thread: " + threadDescription), 3, 3, TimeUnit.SECONDS);
+
+
+            }
+
             while ((count = bufferedInputStream.read(bytes)) != -1) {
                 stream.write(bytes, 0, count);
+
             }
+
+            downloadingProcess.shutdown();
+
+
             long timeEndDownload = System.currentTimeMillis() / 1000;
             stream.close();
-            System.out.println("Download finished. Time of download " + fileName + " " + (timeEndDownload - timeStartDownload) + "sec.");
+
+
+            FinishedDownload finishedDownload = new FinishedDownload(fileName);
+            finishedDownload.run();
+
+            //System.out.println("Download finished. Time of download " + fileName + " " + (timeEndDownload - timeStartDownload) + "sec.");
         } catch (IOException e) {
             e.printStackTrace();
         }

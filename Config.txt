@@ -1,8 +1,10 @@
 [download]
 C:\Users\Leonid\Downloads\
 [threads]
-2
+3
 [links]
 http://speedtest.tele2.net/10MB.zip
-http://speedtest.tele2.net/1MB.zip
 http://speedtest.tele2.net/10MB.zip
+http://speedtest.tele2.net/100MB.zip
+http://speedtest.tele2.net/10MB.zip
+http://speedtest.tele2.net/1MB.zip
