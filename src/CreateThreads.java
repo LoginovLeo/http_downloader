@@ -1,18 +1,26 @@
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+
 public class CreateThreads {
+
+
+    List<Download> filesToDownload = new ArrayList<>();
+
 
     public void runThreads(List<String> links, int numberOfThreads, String path) throws InterruptedException {
 
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(links.size());
-        ThreadPoolExecutor executorService = new ThreadPoolExecutor(numberOfThreads,numberOfThreads,1,TimeUnit.SECONDS,workQueue);
-
+        ThreadPoolExecutor executorService = new ThreadPoolExecutor(numberOfThreads, numberOfThreads, 5, TimeUnit.SECONDS, workQueue);
 
         for (String linksToDownload : links) {
-            executorService.execute(new Download(linksToDownload, path));
+            filesToDownload.add(new Download(linksToDownload, path));
+        }
 
+        for (Download download : filesToDownload) {
+            executorService.execute(download);
             Thread.sleep(250);
         }
 
@@ -23,26 +31,58 @@ public class CreateThreads {
             return thread;
         };
 
-        ScheduledExecutorService downloadingProcess = Executors.newScheduledThreadPool(1, factory);
-        downloadingProcess.scheduleWithFixedDelay(() -> {
-            System.out.println("Files in queue " + workQueue.size());
+        ScheduledExecutorService queueInformation = Executors.newScheduledThreadPool(1, factory);
+        queueInformation.scheduleWithFixedDelay(() -> {
+
+            System.out.println("Downloading files: ");
+            for (Download filesInProcess : filesToDownload) {
+                if (!filesInProcess.isFinished()) {
+                    try {
+                        Field name = filesInProcess.getClass().getDeclaredField("fileName");
+                        name.setAccessible(true);
+                        if (name.get(filesInProcess) != null) {
+                            System.out.println(name.get(filesInProcess));
+                        }
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            System.out.println();
+
+            System.out.println("Files in queue: " + workQueue.size());
             for (Object queueOfDownload : workQueue) {
                 try {
                     Field url = queueOfDownload.getClass().getDeclaredField("URL");
                     url.setAccessible(true);
                     System.out.println(url.get(queueOfDownload));
-
-
                 } catch (IllegalAccessException | NoSuchFieldException e) {
                     e.printStackTrace();
                 }
+
             }
             System.out.println();
+
+            System.out.println("Files finished download: ");
+            for (Download filesFinishedDownload : filesToDownload) {
+                if (filesFinishedDownload.isFinished()) {
+                    try {
+                        Field name = filesFinishedDownload.getClass().getDeclaredField("fileName");
+                        name.setAccessible(true);
+                        System.out.println(name.get(filesFinishedDownload));
+                    } catch (NoSuchFieldException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+            System.out.println("___________________________________________");
+
         }, 0, 3, TimeUnit.SECONDS);
 
 
         executorService.shutdown();
 
-
     }
+
 }
