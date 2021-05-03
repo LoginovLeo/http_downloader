@@ -7,7 +7,7 @@ import java.util.concurrent.*;
 public class CreateThreads {
 
 
-    List<Download> filesToDownload = new ArrayList<>();
+    private final List<Download> filesToDownload = new ArrayList<>();
 
 
     public void runThreads(List<String> links, int numberOfThreads, String path) throws InterruptedException {
@@ -35,22 +35,19 @@ public class CreateThreads {
         queueInformation.scheduleWithFixedDelay(() -> {
 
             System.out.println("Downloading files: ");
+            //basic getter
             for (Download filesInProcess : filesToDownload) {
                 if (!filesInProcess.isFinished()) {
-                    try {
-                        Field name = filesInProcess.getClass().getDeclaredField("fileName");
-                        name.setAccessible(true);
-                        if (name.get(filesInProcess) != null) {
-                            System.out.println(name.get(filesInProcess));
-                        }
-                    } catch (NoSuchFieldException | IllegalAccessException e) {
-                        e.printStackTrace();
+                    String name = filesInProcess.getFileName();
+                    if (name != null) {
+                        System.out.println(name);
                     }
                 }
             }
             System.out.println();
 
             System.out.println("Files in queue: " + workQueue.size());
+            //Reflection
             for (Object queueOfDownload : workQueue) {
                 try {
                     Field url = queueOfDownload.getClass().getDeclaredField("URL");

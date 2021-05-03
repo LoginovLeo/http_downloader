@@ -16,11 +16,13 @@ public class Download implements Runnable {
         return finished;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
 
     public Download(String url, String path) {
         this.URL = url;
         this.PATH = path;
-
     }
 
     @Override
@@ -28,19 +30,14 @@ public class Download implements Runnable {
 
         try {
             URL url = new URL(this.URL);
-            String fullFileName = url.getFile();
-            fileName = fullFileName.substring(fullFileName.lastIndexOf("/") + 1);
+            fileName = url.getFile().substring(url.getFile().lastIndexOf("/") + 1);
             int countRepeats = 0;
             File fileToDownload;
+            String constFilename = fileName.substring(0, fileName.lastIndexOf("."));
             do {
                 fileToDownload = new File(PATH + fileName);
-                String tempFileName = fileName;
-
                 if (fileToDownload.exists() && !fileToDownload.isDirectory()) {
-                    int indexOfDot = fileName.lastIndexOf(".");
-                    int indexOfB = tempFileName.lastIndexOf("B");
-                    tempFileName = fileName.substring(0, indexOfB + 1) + "(" + countRepeats++ + ")" + fileName.substring(indexOfDot);
-                    fileName = tempFileName;
+                    fileName = constFilename + "(" + countRepeats++ + ")" + fileName.substring(fileName.lastIndexOf("."));
                 }
             } while (fileToDownload.exists() && !fileToDownload.isDirectory());
 
