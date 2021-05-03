@@ -47,7 +47,8 @@ public class CreateThreads {
             System.out.println();
 
             System.out.println("Files in queue: " + workQueue.size());
-            //Reflection
+
+            //Reflection for example
             for (Object queueOfDownload : workQueue) {
                 try {
                     Field url = queueOfDownload.getClass().getDeclaredField("URL");
